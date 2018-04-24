@@ -21,6 +21,7 @@ or use the flag of the language
 :fr:` "Text to translate in french"`
 
 ### Supported languages
+Languages you can translate to :
 * French (fr)
 * English (en)
 * German (de)
@@ -29,3 +30,5 @@ or use the flag of the language
 * Italian (it)
 * Russian (ru)
 * Arabic (ar)
+
+More languages will be added soon.

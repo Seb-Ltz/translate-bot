@@ -4,13 +4,15 @@ const translate = require('google-translate-api');
 
 client.on('ready', () => {
   console.log('I am ready!');
+
 });
 
 const prefix = '>';
 
 const flags = {
     "en" : ":flag_gb:",
-    "ja" : ":flag_jp:"
+    "ja" : ":flag_jp:",
+    "da" : ":flag_dk:"
 }
 
 const flagEmojis = {
@@ -21,10 +23,12 @@ const flagEmojis = {
     "🇯🇵" : "jp",
     "🇪🇸" : "es",
     "🇮🇹" : "it",
-    "🇷🇺" : "ru"
+    "🇷🇺" : "ru",
+    "🇦🇷" : "ar"
 }
 
 client.on('message', message => {
+    // console.log(message.content);
     var content = message.content;
 
     var user = message.channel.lastMessage.author;
@@ -41,25 +45,31 @@ client.on('message', message => {
 
         switch (command) {
             case "fr":
-                translateTo('fr', contentText, user, message.channel);
+                translateTo('fr', contentText, user, message);
                 break;
+            case "gb":
+            case "us":
             case "en":
-                translateTo('en', contentText, user, message.channel);
+                translateTo('en', contentText, user, message);
                 break;
             case "de":
-                translateTo('de', contentText, user, message.channel);
+                translateTo('de', contentText, user, message);
                 break;
             case "es":
-                translateTo('es', contentText, user, message.channel);
+                translateTo('es', contentText, user, message);
                 break;
+            case "ja":
             case "jp":
-                translateTo('ja', contentText, user, message.channel);
+                translateTo('ja', contentText, user, message);
                 break;
             case "it":
-                translateTo('it', contentText, user, message.channel);
+                translateTo('it', contentText, user, message);
                 break;
             case "ru":
-                translateTo('ru', contentText, user, message.channel);
+                translateTo('ru', contentText, user, message);
+                break;
+            case "ar":
+                translateTo('ar', contentText, user, message);
                 break;
             case "help":
                 message.channel.send("Supported languages : " + Object.keys(flagEmojis))
@@ -68,8 +78,8 @@ client.on('message', message => {
     }
 });
 
-function translateTo(language, content, user, channel) {
-
+function translateTo(language, content, user, message) {
+    var channel = message.channel;
     var userId = user.id;
     var userName = user.username;
     var userAvatar = user.avatar;
@@ -77,13 +87,21 @@ function translateTo(language, content, user, channel) {
     var flagToName = flags[language] == undefined ? ":flag_" + language + ":" : flags[language];
 
     translate(content, {to: language}).then(res => {
-        var iconUrl = userAvatar != null ? "https://cdn.discordapp.com/avatars/"+userId+"/"+ userAvatar +".png" : null;
-        if(res.from.language.iso != language) {
+        var iconUrl = userAvatar != null ? "https://cdn.discordapp.com/avatars/"+userId+"/"+ userAvatar +".png" : user.displayAvatarURL;
+        var color;
 
+        if(message.member== null) {
+            color = 16777215;
+        } else {
+            color = message.member.roles.keyArray().length != 1 ? message.member.roles.last().color : 16777215;
+        }
+
+        if(res.from.language.iso != language) {
             var flagFromName = flags[res.from.language.iso] == undefined ? ":flag_" + res.from.language.iso + ":" : flags[res.from.language.iso];
+
             const embed = {
                 "description": res.text + "\n" + flagFromName + " :loudspeaker: " + flagToName,
-                "color": 3000000,
+                "color": color,
                 "author": {
                     "name": userName,
                     "icon_url": iconUrl
